@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+sg_proj_012.egg-info/PKG-INFO
+sg_proj_012.egg-info/SOURCES.txt
+sg_proj_012.egg-info/dependency_links.txt
+sg_proj_012.egg-info/requires.txt
+sg_proj_012.egg-info/top_level.txt
+src/__init__.py
+src/main.py
+tests/test_main.py
