@@ -1,0 +1,5 @@
+2026-06-22
+- 프로젝트 초기화 및 디렉토리 구조 설정 (src/, tests/, configs/)
+- ADR 0001에 따른 Pydantic 스키마 정의 (MatchingRequest, MatchingResponse)
+- MCDA(AHP 기반) 유사 매칭 로직 구현: Surface Energy (60%), Roughness (20%), Processability Level (20%, Hard Constraint)
+- FastAPI 기본 엔드포인트(/match) 작성 완료
