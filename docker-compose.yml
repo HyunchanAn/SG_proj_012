@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  sg_proj_012:
+    build: .
+    ports:
+      - "8010:8000"
+    restart: unless-stopped

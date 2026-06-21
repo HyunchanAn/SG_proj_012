@@ -3,3 +3,6 @@
 - ADR 0001에 따른 Pydantic 스키마 정의 (MatchingRequest, MatchingResponse)
 - MCDA(AHP 기반) 유사 매칭 로직 구현: Surface Energy (60%), Roughness (20%), Processability Level (20%, Hard Constraint)
 - FastAPI 기본 엔드포인트(/match) 작성 완료
+
+
+[2026-06-22] 대규모 아키텍처 통일성 반영: pyproject.toml, Dockerfile, docker-compose.yml, CI/CD 추가 완료.
