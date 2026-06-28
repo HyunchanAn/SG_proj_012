@@ -9,12 +9,14 @@ class DummyProduct:
         self.processability_level = proc
         self.finish_type = finish
 
-# Mock DB
+# Mock DB with actual products from the report
 DB = [
-    DummyProduct("PRD-001", 30.0, 0.5, 2, "Hairline"),
-    DummyProduct("PRD-002", 40.0, 1.0, 3, "Mirror"),
-    DummyProduct("PRD-003", 35.0, 0.8, 1, "Hairline"),
-    DummyProduct("PRD-004", 50.0, 2.0, 4, "Matte"),
+    DummyProduct("SGV225", 38.6, 0.8, 2, "2B"),
+    DummyProduct("SGV250", 40.0, 1.0, 3, "2B"),
+    DummyProduct("SGV201", 42.5, 0.2, 1, "BA"),
+    DummyProduct("SGV202", 40.0, 0.5, 2, "BA"),
+    DummyProduct("SGV218ME", 37.5, 0.3, 4, "Hairline"),
+    DummyProduct("SGV220", 35.0, 0.4, 3, "Hairline"),
 ]
 
 def calculate_score(req: MatchingRequest, prod: DummyProduct) -> Tuple[float, Dict[str, float]]:
