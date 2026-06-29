@@ -9,30 +9,36 @@ class MatchingRule:
         self.processability_level = proc
         self.finish_type = finish
 
-import json
-from pathlib import Path
+import httpx
+import os
 
-# Load Matching Rule Matrix dynamically
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-RULE_FILE = BASE_DIR / "data" / "rule_matrix.json"
+# 004 DB API URL from env
+MODULE_004_URL = os.getenv("MODULE_004_URL", "http://004-db:8004")
 
-RULE_MATRIX = []
-if RULE_FILE.exists():
-    with open(RULE_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        for d in data:
-            RULE_MATRIX.append(
-                MatchingRule(
-                    d.get("code"),
-                    d.get("surface_energy"),
-                    d.get("roughness"),
-                    d.get("processability_level"),
-                    d.get("finish_type")
-                )
-            )
-else:
-    import logging
-    logging.warning("rule_matrix.json not found! Matching rules are empty.")
+async def load_rule_matrix() -> List[MatchingRule]:
+    """Fetch products from 004 DB and convert to MatchingRule."""
+    matrix = []
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res = await client.get(f"{MODULE_004_URL}/products")
+            if res.status_code == 200:
+                products = res.json()
+                for p in products:
+                    # Filter out products that don't have matching targets defined
+                    if p.get("target_surface_energy") is not None:
+                        matrix.append(
+                            MatchingRule(
+                                p.get("product_name") or p.get("category", "UNKNOWN"),
+                                p.get("target_surface_energy"),
+                                p.get("target_roughness", 0.0),
+                                p.get("target_processability_level", 3),
+                                p.get("target_finish_type", "Any")
+                            )
+                        )
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to fetch products from 004 DB: {e}")
+    return matrix
 def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Dict[str, float]]:
     # Hard constraint on processability
     # If the product is stiffer (higher level) than required, it fails.
@@ -59,10 +65,12 @@ def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Di
         "processability_score": round(proc_score * 0.2, 2)
     }
 
-def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
+async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
     recommendations = []
     
-    for rule in RULE_MATRIX:
+    rule_matrix = await load_rule_matrix()
+    
+    for rule in rule_matrix:
         score, reason = calculate_score(req, rule)
         if score > 0:
             recommendations.append(
