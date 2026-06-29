@@ -1,3 +1,5 @@
+import os
+import httpx
 from typing import List, Tuple, Dict
 from src.models.schemas import MatchingRequest, ProductRecommendation
 
@@ -8,9 +10,6 @@ class MatchingRule:
         self.roughness = rough
         self.processability_level = proc
         self.finish_type = finish
-
-import httpx
-import os
 
 # 004 DB API URL from env
 MODULE_004_URL = os.getenv("MODULE_004_URL", "http://004-db:8004")
