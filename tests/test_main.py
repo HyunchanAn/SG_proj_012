@@ -1,3 +1,4 @@
+# TOPSIS 다기준 의사결정 추천 매칭 모듈의 FastAPI 엔드포인트(/match) 및 가중치 매칭 점수 산출 로직을 검증하는 테스트 코드입니다.
 from fastapi.testclient import TestClient
 from src.main import app
 import pytest
