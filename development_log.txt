@@ -11,3 +11,9 @@
 
 ## 2026-06-27
 - 불필요한 빌드 캐시, pycache, egg-info 등 임시 파일 일괄 정리 및 루트 경로 대청소 완료.
+
+---
+[2026-06-29 09:49:17]
+- 작업 내용: DummyProduct 클래스명을 MatchingRule로, DB 변수명을 RULE_MATRIX로 변경
+- 목적: 단순 Mock DB가 아닌, 물리적 매칭 룰을 나타내는 매트릭스임을 명확히 하여 외부 비판에 대응
+- 작업자: Antigravity (AI)
