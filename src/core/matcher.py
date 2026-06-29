@@ -9,16 +9,30 @@ class MatchingRule:
         self.processability_level = proc
         self.finish_type = finish
 
-# Matching Rule Matrix for Our Products
-RULE_MATRIX = [
-    MatchingRule("SGV225", 38.6, 0.8, 2, "2B"),
-    MatchingRule("SGV250", 40.0, 1.0, 3, "2B"),
-    MatchingRule("SGV201", 42.5, 0.2, 1, "BA"),
-    MatchingRule("SGV202", 40.0, 0.5, 2, "BA"),
-    MatchingRule("SGV218ME", 37.5, 0.3, 4, "Hairline"),
-    MatchingRule("SGV220", 35.0, 0.4, 3, "Hairline"),
-]
+import json
+from pathlib import Path
 
+# Load Matching Rule Matrix dynamically
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+RULE_FILE = BASE_DIR / "data" / "rule_matrix.json"
+
+RULE_MATRIX = []
+if RULE_FILE.exists():
+    with open(RULE_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        for d in data:
+            RULE_MATRIX.append(
+                MatchingRule(
+                    d.get("code"),
+                    d.get("surface_energy"),
+                    d.get("roughness"),
+                    d.get("processability_level"),
+                    d.get("finish_type")
+                )
+            )
+else:
+    import logging
+    logging.warning("rule_matrix.json not found! Matching rules are empty.")
 def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Dict[str, float]]:
     # Hard constraint on processability
     # If the product is stiffer (higher level) than required, it fails.

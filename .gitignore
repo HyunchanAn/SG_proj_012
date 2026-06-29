@@ -3,3 +3,6 @@ __pycache__/
 .venv
 venv/
 .env
+
+# Intellectual Property Rules
+data/rule_matrix.json

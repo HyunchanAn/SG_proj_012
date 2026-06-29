@@ -26,3 +26,7 @@ graph TD
 
 ## 4. 참조 문서
 - ADR-0001
+
+
+---
+*Updated by System: 2026-06-29 (Resolved 260627 Analysis Report priority issues)*
