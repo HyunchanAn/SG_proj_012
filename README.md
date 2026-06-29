@@ -38,3 +38,6 @@ graph TD
 
 ---
 *Updated by System: 2026-06-29 (Matching DB Integration Completed)*
+## 최신 업데이트 내역 (2026-06-29)
+- 의사결정 모듈의 다기준 매칭 상수를 기재하여 투명성 제고.
+- 구동 중 발생하던 httpx 모듈 누락(ModuleNotFoundError) 해결을 위해 의존성 업데이트 반영.
