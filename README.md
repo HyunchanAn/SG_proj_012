@@ -29,6 +29,11 @@ graph TD
 
 
 ---
+## 5. 알려진 한계 및 추후 보정 과제 (Known Limitations & Future Adjustments)
+- 현재 제품 매칭 알고리즘(matcher.py) 내 점수 가중치(표면에너지 0.6, 조도 0.2, 가공성 0.2) 및 특성별 오차 보정 상수(표면에너지 2, 조도 20, 가공 가혹도 10)는 초기 정합성 유도를 위해 임의로 하드코딩된 휴리스틱(Heuristic) 상수입니다.
+- 추후 실측 데이터와 필드 테스트 결과를 확보하여, AHP/TOPSIS 다기준 의사결정 모델에 부합하는 일관성 지수 및 객관적인 가중치 도출 수식으로 전면 대체할 예정입니다.
+
+---
 *Updated by System: 2026-06-29 (Resolved 260627 Analysis Report priority issues)*
 
 ---
