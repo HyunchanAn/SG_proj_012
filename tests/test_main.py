@@ -1,7 +1,19 @@
 from fastapi.testclient import TestClient
 from src.main import app
+import pytest
 
 client = TestClient(app)
+
+@pytest.fixture(autouse=True)
+def mock_load_rule_matrix(monkeypatch):
+    from src.core.matcher import MatchingRule
+    async def mock_load():
+        return [
+            MatchingRule("PRD-001", 32.0, 0.6, 2, "Hairline"),
+            MatchingRule("PRD-002", 40.0, 1.0, 3, "2B"),
+            MatchingRule("PRD-003", 35.0, 0.8, 1, "BA")
+        ]
+    monkeypatch.setattr("src.core.matcher.load_rule_matrix", mock_load)
 
 def test_match_successful():
     # Surface energy matches PRD-001 or PRD-003 or PRD-002, processability is low enough
