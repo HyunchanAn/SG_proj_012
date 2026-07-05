@@ -38,6 +38,7 @@ graph TD
 
 ---
 *Updated by System: 2026-06-29 (Matching DB Integration Completed)*
-## 최신 업데이트 내역 (2026-06-29)
-- 의사결정 모듈의 다기준 매칭 상수를 기재하여 투명성 제고.
-- 구동 중 발생하던 httpx 모듈 누락(ModuleNotFoundError) 해결을 위해 의존성 업데이트 반영.
+## 최신 업데이트 내역 (2026-07-05)
+- [CI/CD]: 통합 E2E 테스트 검사 통과 및 전체 모듈 연동 보고서 발간 완료.
+- [loguru 로깅 통합]: 표준 logging 및 print 구문을 loguru.logger 기반으로 일원화하여, 매칭 알고리즘 시작 시점 및 Top 3 추천 선정 완료 단계를 체계적으로 수집하도록 개선함.
+- [의존성 추가]: pyproject.toml dependencies 내에 loguru>=0.7.0 명세를 정식 추가함.

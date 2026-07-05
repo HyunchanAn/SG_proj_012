@@ -1,6 +1,7 @@
 import os
 import httpx
 from typing import List, Tuple, Dict
+from loguru import logger
 from src.models.schemas import MatchingRequest, ProductRecommendation
 
 class MatchingRule:
@@ -35,8 +36,7 @@ async def load_rule_matrix() -> List[MatchingRule]:
                             )
                         )
     except Exception as e:
-        import logging
-        logging.error(f"Failed to fetch products from 004 DB: {e}")
+        logger.error(f"Failed to fetch products from 004 DB: {e}")
     return matrix
 def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Dict[str, float]]:
     # Hard constraint on processability
@@ -65,6 +65,7 @@ def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Di
     }
 
 async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
+    logger.info(f"012 Matcher: Start matching. Input SFE: {req.surface_energy:.4f}, Roughness: {req.roughness:.4f}, Required Processability: {req.required_processability_level}")
     recommendations = []
     
     rule_matrix = await load_rule_matrix()
@@ -82,4 +83,5 @@ async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
             
     # Sort by score descending and take top 3
     recommendations.sort(key=lambda x: x.match_score, reverse=True)
+    logger.info(f"012 Matcher: Matching complete. Selected top {len(recommendations[:3])} recommendations.")
     return recommendations[:3]
