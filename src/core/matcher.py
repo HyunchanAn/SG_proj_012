@@ -15,6 +15,22 @@ class MatchingRule:
 # 004 DB API URL from env
 MODULE_004_URL = os.getenv("MODULE_004_URL", "http://004-db:8004")
 
+async def load_stock_matrix() -> Dict[int, int]:
+    """Fetch adherend stocks from 004 DB."""
+    stocks_map = {}
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res = await client.get(f"{MODULE_004_URL}/adherend-stocks")
+            if res.status_code == 200:
+                stocks = res.json()
+                for st in stocks:
+                    prop_id = st.get("adherend_property_id")
+                    if prop_id is not None:
+                        stocks_map[prop_id] = stocks_map.get(prop_id, 0) + st.get("quantity", 0)
+    except Exception as e:
+        logger.error(f"Failed to fetch stocks from 004 DB: {e}")
+    return stocks_map
+
 async def load_rule_matrix() -> List[MatchingRule]:
     """Fetch products from 004 DB and convert to MatchingRule."""
     matrix = []
@@ -69,6 +85,7 @@ async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
     recommendations = []
     
     rule_matrix = await load_rule_matrix()
+    stock_matrix = await load_stock_matrix()
     
     for rule in rule_matrix:
         score, reason = calculate_score(req, rule)
