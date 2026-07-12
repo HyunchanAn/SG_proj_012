@@ -60,24 +60,28 @@ def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Di
     if rule.processability_level > req.required_processability_level:
         return 0.0, {}
     
-    # 20% Processability Score
+    # 20% Processability Score (007, 011 모듈 기인)
     proc_score = 100.0 - (req.required_processability_level - rule.processability_level) * 10
     proc_score = max(0.0, min(100.0, proc_score))
     
-    # 60% Surface Energy Score
+    # 40% Surface Energy Score (002 모듈 기인)
     se_diff = abs(req.surface_energy - rule.surface_energy)
     se_score = max(0.0, 100.0 - se_diff * 2)
     
-    # 20% Roughness Score
+    # 20% Roughness Score (003 모듈 기인)
     r_diff = abs(req.roughness - rule.roughness)
     r_score = max(0.0, 100.0 - r_diff * 20)
+
+    # 20% Finish Type Score (003 모듈 광택도 기인)
+    finish_score = 100.0 if (rule.finish_type == "Any" or rule.finish_type == req.finish_type) else 0.0
     
-    total = 0.6 * se_score + 0.2 * r_score + 0.2 * proc_score
+    total = 0.4 * se_score + 0.2 * r_score + 0.2 * proc_score + 0.2 * finish_score
     
     return total, {
-        "surface_energy_score": round(se_score * 0.6, 2),
+        "surface_energy_score": round(se_score * 0.4, 2),
         "roughness_score": round(r_score * 0.2, 2),
-        "processability_score": round(proc_score * 0.2, 2)
+        "processability_score": round(proc_score * 0.2, 2),
+        "finish_score": round(finish_score * 0.2, 2)
     }
 
 async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
