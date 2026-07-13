@@ -10,9 +10,9 @@ def mock_load_rule_matrix(monkeypatch):
     from src.core.matcher import MatchingRule
     async def mock_load():
         return [
-            MatchingRule("PRD-001", 32.0, 0.6, 2, "Hairline"),
-            MatchingRule("PRD-002", 40.0, 1.0, 3, "2B"),
-            MatchingRule("PRD-003", 35.0, 0.8, 1, "BA")
+            MatchingRule("PRD-001", 32.0, 600.0, 2, "Hairline"),
+            MatchingRule("PRD-002", 40.0, 1000.0, 3, "2B"),
+            MatchingRule("PRD-003", 35.0, 800.0, 1, "BA")
         ]
     monkeypatch.setattr("src.core.matcher.load_rule_matrix", mock_load)
 
@@ -21,7 +21,7 @@ def test_match_successful():
     payload = {
         "substrate_id": "sub-123",
         "surface_energy": 32.0,
-        "roughness": 0.6,
+        "roughness": 600.0,
         "finish_type": "Hairline",
         "required_processability_level": 3
     }
@@ -42,7 +42,7 @@ def test_match_no_results():
     payload = {
         "substrate_id": "sub-123",
         "surface_energy": 32.0,
-        "roughness": 0.6,
+        "roughness": 600.0,
         "finish_type": "Hairline",
         "required_processability_level": 0
     }

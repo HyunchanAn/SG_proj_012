@@ -68,9 +68,9 @@ def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Di
     se_diff = abs(req.surface_energy - rule.surface_energy)
     se_score = max(0.0, 100.0 - se_diff * 2)
     
-    # 20% Roughness Score (003 모듈 기인)
+    # 20% Roughness Score (003 모듈 기인, nm 단위 차이 적용)
     r_diff = abs(req.roughness - rule.roughness)
-    r_score = max(0.0, 100.0 - r_diff * 20)
+    r_score = max(0.0, 100.0 - (r_diff / 1000.0) * 20)
 
     # 20% Finish Type Score (003 모듈 광택도 기인)
     finish_score = 100.0 if (rule.finish_type == "Any" or rule.finish_type == req.finish_type) else 0.0
