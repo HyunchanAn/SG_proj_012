@@ -6,3 +6,7 @@ venv/
 
 # Intellectual Property Rules
 data/rule_matrix.json
+test_out.log
+demo_ui/do_refactor*.py
+demo_ui/find_indices.py
+demo_ui/refactor.py
