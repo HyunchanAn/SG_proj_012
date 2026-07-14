@@ -89,7 +89,7 @@ async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
     recommendations = []
     
     rule_matrix = await load_rule_matrix()
-    stock_matrix = await load_stock_matrix()
+    # stock_matrix = await load_stock_matrix()
     
     for rule in rule_matrix:
         score, reason = calculate_score(req, rule)
