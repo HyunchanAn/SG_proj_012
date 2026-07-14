@@ -17,7 +17,7 @@ MODULE_004_URL = os.getenv("MODULE_004_URL", "http://004-db:8004")
 
 async def load_stock_matrix() -> Dict[int, int]:
     """Fetch adherend stocks from 004 DB."""
-    stocks_map = {}
+    stocks_map: Dict[int, int] = {}
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             res = await client.get(f"{MODULE_004_URL}/adherend-stocks")
