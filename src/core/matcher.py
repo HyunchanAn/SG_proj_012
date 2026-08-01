@@ -56,51 +56,50 @@ async def load_rule_matrix() -> list[MatchingRule]:
     except Exception as e:
         logger.error(f"Failed to fetch products from 004 DB: {e}")
     return matrix
-def calculate_score(req: MatchingRequest, rule: MatchingRule) -> tuple[float, dict[str, float]]:
-    # Hard constraint on processability
-    # If the product is stiffer (higher level) than required, it fails.
-    if rule.processability_level > req.required_processability_level:
-        return 0.0, {}
-    
-    # 20% Processability Score (007, 011 모듈 기인)
-    proc_score = 100.0 - (req.required_processability_level - rule.processability_level) * 10
-    proc_score = max(0.0, min(100.0, proc_score))
-    
-    # 40% Surface Energy Score (002 모듈 기인)
-    se_diff = abs(req.surface_energy - rule.surface_energy)
-    se_score = max(0.0, 100.0 - se_diff * 2)
-    
-    # 20% Roughness Score (003 모듈 기인, nm 단위 차이 적용)
-    r_diff = abs(req.roughness - rule.roughness)
-    r_score = max(0.0, 100.0 - (r_diff / 1000.0) * 20)
-
-    # 20% Finish Type Score (003 모듈 광택도 기인)
-    finish_score = 100.0 if (rule.finish_type == "Any" or rule.finish_type == req.finish_type) else 0.0
-    
-    total = 0.4 * se_score + 0.2 * r_score + 0.2 * proc_score + 0.2 * finish_score
-    
-    return total, {
-        "surface_energy_score": round(se_score * 0.4, 2),
-        "roughness_score": round(r_score * 0.2, 2),
-        "processability_score": round(proc_score * 0.2, 2),
-        "finish_score": round(finish_score * 0.2, 2)
-    }
+from src.core.mcda import calculate_topsis_scores
 
 async def match_products(req: MatchingRequest) -> list[ProductRecommendation]:
     logger.info(f"012 Matcher: Start matching. Input SFE: {req.surface_energy:.4f}, Roughness: {req.roughness:.4f}, Required Processability: {req.required_processability_level}")
-    recommendations = []
     
     rule_matrix = await load_rule_matrix()
-    # stock_matrix = await load_stock_matrix()
     
+    # Pre-filter candidates based on hard constraints
+    candidates_to_evaluate = []
     for rule in rule_matrix:
-        score, reason = calculate_score(req, rule)
-        if score > 0:
+        # Hard constraint on processability
+        # If the product is stiffer (higher level) than required, it fails.
+        if rule.processability_level > req.required_processability_level:
+            continue
+            
+        candidates_to_evaluate.append({
+            "id": rule.code,
+            "se": rule.surface_energy,
+            "rough": rule.roughness,
+            "proc": rule.processability_level,
+            "finish": rule.finish_type
+        })
+        
+    if not candidates_to_evaluate:
+        logger.warning("012 Matcher: No candidates passed the hard processability constraint.")
+        return []
+
+    # Run formal MCDA (TOPSIS)
+    scored_candidates = calculate_topsis_scores(
+        req_se=req.surface_energy,
+        req_rough=req.roughness,
+        req_proc=req.required_processability_level,
+        req_finish=req.finish_type,
+        candidates=candidates_to_evaluate
+    )
+    
+    recommendations = []
+    for c in scored_candidates:
+        if c["topsis_score"] > 0:
             recommendations.append(
                 ProductRecommendation(
-                    product_code=rule.code,
-                    match_score=round(score, 2),
-                    match_reason=reason
+                    product_code=c["id"],
+                    match_score=round(c["topsis_score"], 2),
+                    match_reason=c["details"]
                 )
             )
             
