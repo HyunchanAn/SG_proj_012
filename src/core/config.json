@@ -1,9 +1,9 @@
 {
     "weights": {
-        "surface_energy": 0.9709,
-        "roughness": 0.0097,
-        "processability": 0.0097,
-        "finish_type": 0.0097
+        "surface_energy": 0.7,
+        "roughness": 0.2,
+        "processability": 0.05,
+        "finish_type": 0.05
     },
     "reference_bounds": {
         "surface_energy_diff_max": 50.0,

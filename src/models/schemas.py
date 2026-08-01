@@ -10,7 +10,7 @@ class MatchingRequest(BaseModel):
 class ProductRecommendation(BaseModel):
     product_code: str
     match_score: float
-    match_reason: dict  # {"surface_energy_score": 60, "roughness_score": 20, ...}
+    match_reason: dict  # {"surface_energy_norm": 0.9, "roughness_norm": 0.8, ...}
 
 class MatchingResponse(BaseModel):
     recommendations: list[ProductRecommendation] = Field(default_factory=list, max_length=3)

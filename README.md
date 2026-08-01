@@ -6,33 +6,36 @@
 ![Framework](https://img.shields.io/badge/Framework-FastAPI_MCDA-orange)
 
 ## 1. 개요
-MCDA(AHP/TOPSIS) 기반 다중 목적 최적화 기법을 사용하여 기성 제품을 추천하는 엔진입니다.
+다기준 의사결정(MCDA) 방식인 TOPSIS(Technique for Order of Preference by Similarity to Ideal Solution) 기법을 사용하여 기성 제품을 추천하는 엔진입니다.
 
 ## 2. 시스템 아키텍처
 ```mermaid
 graph TD
-    A[Matching Request] --> B[MCDA Engine]
-    B --> C[Score: Surface Energy 60%]
-    B --> D[Score: Roughness 20%]
-    B --> E[Constraint: Processability 20%]
-    C --> F[Ranking & Selection]
-    D --> F
-    E --> F
+    A[Matching Request] --> B[Hard Constraints Filter]
+    B --> C[Reference-Bounds TOPSIS Engine]
+    C --> D[Normalization & Weighting]
+    D --> E[Euclidean Distance to Ideal/Negative Ideal]
+    E --> F[Relative Closeness Score]
     F --> G[Top 3 Recommendations]
 ```
 
-## 3. 기술 스택
-- Backend: FastAPI, Python 3.10
-- Algorithm: AHP / TOPSIS
+## 3. 핵심 동작 방식 (Reference-Bounds TOPSIS)
+- **후보 필터링**: 가공성 수준 등 물리적 제약을 충족하지 못하는 제품은 1차로 필터링됩니다.
+- **절대적 기준 스케일링**: 현재 데이터베이스 내의 제품군끼리 상대적으로 정규화(Vector Normalization)를 수행할 경우 발생하는 순위 역전(Rank Reversal) 현상을 방지하기 위해, 사전 정의된 절대적 허용 한계(`reference_bounds`)를 기준으로 0~1 정규화를 수행합니다.
+- **최종 점수**: 각 속성별 가중치가 적용된 유클리디안 거리(이상해/부정해)를 기반으로 산출된 Relative Closeness(%)를 최종 추천 점수로 반환합니다.
 
-## 4. 참조 문서
+## 4. 가중치 튜닝 (Offline Optimizer)
+- `scripts/optimize_weights.py`를 통해 성공적인 매칭 이력(Ground Truth)을 모사하여, 최적의 가중치를 자동 산출합니다.
+- 특정 속성에 점수가 과도하게 편향되는 것을 방지하기 위해 각 가중치에 최소/최대 제약(bounds)을 두고 `scipy.optimize.minimize` 로직이 구동됩니다.
+- 도출된 가중치 및 설정값은 `src/core/config.json`에서 관리됩니다.
+
+## 5. 기술 스택
+- Backend: FastAPI, Python 3.10
+- Algorithm: Reference-Bounds TOPSIS
+- Optimization: SciPy (SLSQP)
+
+## 6. 참조 문서
 - ADR-0001
 
-
 ---
-## 5. 알려진 한계 및 추후 보정 과제 (Known Limitations & Future Adjustments)
-- 현재 제품 매칭 알고리즘(matcher.py) 내 점수 가중치(표면에너지 0.6, 조도 0.2, 가공성 0.2) 및 특성별 오차 보정 상수(표면에너지 2, 조도 20, 가공 가혹도 10)는 초기 정합성 유도를 위해 임의로 하드코딩된 휴리스틱(Heuristic) 상수입니다.
-- 추후 실측 데이터와 필드 테스트 결과를 확보하여, AHP/TOPSIS 다기준 의사결정 모델에 부합하는 일관성 지수 및 객관적인 가중치 도출 수식으로 전면 대체할 예정입니다.
-
----
-*Last Updated: 2026-07-19 (Hybrid Environment & MSA Integration)*
+*Last Updated: 2026-08-02 (MCDA Refactoring & Offline Optimizer)*

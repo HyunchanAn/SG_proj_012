@@ -101,15 +101,21 @@ def main():
     # Initial guess
     initial_weights = [0.4, 0.2, 0.2, 0.2]
     
-    # Bounds for weights (0 to 1)
-    bounds = [(0.01, 1.0), (0.01, 1.0), (0.01, 1.0), (0.01, 1.0)]
+    # Bounds for weights (minimum 0.05, maximum 0.70) to prevent extreme overfitting
+    # We want a balanced distribution even with a small dummy dataset.
+    bounds = [(0.05, 0.7), (0.05, 0.7), (0.05, 0.7), (0.05, 0.7)]
+    
+    # We add a constraint so that the sum of the weights equals 1
+    # Though evaluate_weights normalizes them anyway, adding this to the optimizer helps convergence.
+    constraints = {'type': 'eq', 'fun': lambda w: sum(w) - 1.0}
     
     res = minimize(
         evaluate_weights, 
         initial_weights, 
         args=(ground_truth, catalog),
-        method='L-BFGS-B',
-        bounds=bounds
+        method='SLSQP',
+        bounds=bounds,
+        constraints=constraints
     )
     
     if res.success:
