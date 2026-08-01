@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from src.models.schemas import MatchingRequest, MatchingResponse
-from src.core.matcher import match_products
 from loguru import logger
+
+from src.core.matcher import match_products
+from src.models.schemas import MatchingRequest, MatchingResponse
 
 app = FastAPI(title="SG_proj_012 - Product Matching Engine")
 

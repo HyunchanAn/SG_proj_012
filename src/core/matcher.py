@@ -1,8 +1,10 @@
 import os
+
 import httpx
-from typing import List, Tuple, Dict
 from loguru import logger
+
 from src.models.schemas import MatchingRequest, ProductRecommendation
+
 
 class MatchingRule:
     def __init__(self, code: str, se: float, rough: float, proc: int, finish: str):
@@ -15,9 +17,9 @@ class MatchingRule:
 # 004 DB API URL from env
 MODULE_004_URL = os.getenv("MODULE_004_URL", "http://004-db:8004")
 
-async def load_stock_matrix() -> Dict[int, int]:
+async def load_stock_matrix() -> dict[int, int]:
     """Fetch adherend stocks from 004 DB."""
-    stocks_map: Dict[int, int] = {}
+    stocks_map: dict[int, int] = {}
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             res = await client.get(f"{MODULE_004_URL}/adherend-stocks")
@@ -31,7 +33,7 @@ async def load_stock_matrix() -> Dict[int, int]:
         logger.error(f"Failed to fetch stocks from 004 DB: {e}")
     return stocks_map
 
-async def load_rule_matrix() -> List[MatchingRule]:
+async def load_rule_matrix() -> list[MatchingRule]:
     """Fetch products from 004 DB and convert to MatchingRule."""
     matrix = []
     try:
@@ -54,7 +56,7 @@ async def load_rule_matrix() -> List[MatchingRule]:
     except Exception as e:
         logger.error(f"Failed to fetch products from 004 DB: {e}")
     return matrix
-def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Dict[str, float]]:
+def calculate_score(req: MatchingRequest, rule: MatchingRule) -> tuple[float, dict[str, float]]:
     # Hard constraint on processability
     # If the product is stiffer (higher level) than required, it fails.
     if rule.processability_level > req.required_processability_level:
@@ -84,7 +86,7 @@ def calculate_score(req: MatchingRequest, rule: MatchingRule) -> Tuple[float, Di
         "finish_score": round(finish_score * 0.2, 2)
     }
 
-async def match_products(req: MatchingRequest) -> List[ProductRecommendation]:
+async def match_products(req: MatchingRequest) -> list[ProductRecommendation]:
     logger.info(f"012 Matcher: Start matching. Input SFE: {req.surface_energy:.4f}, Roughness: {req.roughness:.4f}, Required Processability: {req.required_processability_level}")
     recommendations = []
     
