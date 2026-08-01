@@ -28,3 +28,4 @@ data*/
 models/
 raw_data/
 *.db
+*.egg-info/
