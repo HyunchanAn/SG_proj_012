@@ -55,3 +55,11 @@ CI/CD 안정화: matcher.py 내의 httpx 및 os 모듈 임포트 순서를 파�
 2. macOS 로컬 테스트 및 CI/CD 점검
    - 로컬 E2E 테스트 및 단위 테스트 통과 (Abort trap 에러 미발생)
    - GitHub Actions CI/CD 파이프라인 런타임 유효성 재확인 완료
+
+2026-08-02
+- MCDA(TOPSIS) 알고리즘 도입 및 기존 휴리스틱 수식 제거 완료
+- src/core/config.json 을 통한 초기 가중치 및 정규화 한계값(Bounds) 분리
+- src/core/mcda.py 를 통해 다차원 유클리디안 거리 기반의 이론적 이상해(PIS) / 부정해(NIS) 비교 모듈 구현
+- 오프라인 가중치 튜닝을 위한 scripts/optimize_weights.py 개발 (Scipy 기반)
+- 데이터베이스(Mock Ground Truth)를 활용하여 정답 도출을 위한 초기 최적 가중치 업데이트 반영 완료
+- CI/CD 린팅 및 단위 테스트 연동 테스트 완료
