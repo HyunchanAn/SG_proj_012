@@ -15,3 +15,4 @@ class ProductRecommendation(BaseModel):
 class MatchingResponse(BaseModel):
     recommendations: list[ProductRecommendation] = Field(default_factory=list, max_length=3)
     is_successful: bool
+    source: str = "database"
