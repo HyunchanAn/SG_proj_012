@@ -23,7 +23,7 @@ async def load_stock_matrix(req_id: str = "unknown") -> dict[int, int]:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             headers = {"X-Request-ID": req_id}
-            res = await client.get(f"{MODULE_004_URL}/stocks", headers=headers)
+            res = await client.get(f"{MODULE_004_URL}/adherend-stocks", headers=headers)
             if res.status_code == 200:
                 stocks = res.json()
                 for st in stocks:
