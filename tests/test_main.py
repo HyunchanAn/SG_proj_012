@@ -9,12 +9,12 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def mock_load_rule_matrix(monkeypatch):
     from src.core.matcher import MatchingRule
-    async def mock_load():
+    async def mock_load(req_id: str = "unknown"):
         return [
             MatchingRule("PRD-001", 32.0, 600.0, 2, "Hairline"),
             MatchingRule("PRD-002", 40.0, 1000.0, 3, "2B"),
             MatchingRule("PRD-003", 35.0, 800.0, 1, "BA")
-        ]
+        ], True
     monkeypatch.setattr("src.core.matcher.load_rule_matrix", mock_load)
 
 def test_match_successful():
